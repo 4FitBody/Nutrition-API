@@ -5,9 +5,9 @@ using MediatR;
 
 public class GetByIdQuery : IRequest<Food>
 {
-    public int? Id { get; set; }
+    public int Id { get; set; }
 
-    public GetByIdQuery(int? Id)
+    public GetByIdQuery(int Id)
     {
         this.Id = Id;
     }
