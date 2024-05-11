@@ -16,7 +16,7 @@ public class FoodSqlRepository : IFoodRepository
 
     public async Task ApproveAsync(int id)
     {
-        var searchedFood = await this.dbContext.Food.FirstOrDefaultAsync(exercise => exercise.Id == id);
+        var searchedFood = await this.dbContext.Food.FirstOrDefaultAsync(food => food.Id == id);
     
         searchedFood!.IsApproved = true;
 
