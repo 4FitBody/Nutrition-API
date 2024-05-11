@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Nutrition-API.Infrastructure\Nutrition-API.Infrastructure.csproj" />
+    <ProjectReference Include="..\Nutrition-API.Core\Nutrition-API.Core.csproj" />
   </ItemGroup>
 
 </Project>
