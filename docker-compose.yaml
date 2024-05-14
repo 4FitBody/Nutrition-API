@@ -1,0 +1,41 @@
+version: '1'
+
+services:
+  nutritionapiapp:
+    image: nutritionapi
+    container_name: nutritionapiapp
+    depends_on:
+      - mongodb
+    build:
+      context: .
+      dockerfile: Dockerfile
+    expose:
+      - 8080
+    ports:
+      - 8080:8080
+    networks:
+      - nutritionbridgenetwork
+    restart: always
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    expose:
+      - 27017
+    ports:
+      - 27017:27017
+    networks:
+      - nutritionbridgenetwork
+    volumes:
+      - mymongovolume:/data/db
+      - mymongovolume:/data/configdb
+    restart: always
+
+  
+
+networks:
+  nutritionbridgenetwork:
+    driver: bridge
+
+volumes:
+  mymongovolume:
