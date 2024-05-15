@@ -1,12 +1,17 @@
+using MongoDB.Driver;
 using Microsoft.OpenApi.Models;
-using Nutrition_API.Infrastructure.Data;
 using Nutrition_API.Infrastructure.Repositories;
 using Nutrition_API.Core.Repositories;
 using Nutrition_API.Presentation.Options;
-using Microsoft.EntityFrameworkCore;
-using System.Reflection;
+using Nutrition_API.Core.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration.GetSection("FoodDb").Value;
+
+var database = builder.Configuration.GetSection("Database").Value;
+
+var collection = builder.Configuration.GetSection("Collection").Value;
 
 var blobImageOptionsSection = builder.Configuration.GetSection("BlobImageOptions");
 
@@ -20,26 +25,24 @@ var blobVideoOptions = blobVideoOptionsSection.Get<BlobOptions>() ?? throw new E
 
 builder.Services.Configure<BlobOptions>(blobVideoOptionsSection);
 
-var infrastructureAssembly = typeof(FoodDbContext).Assembly;
+var infrastructureAssembly = typeof(FoodMongoRepository).Assembly;
 
 builder.Services.AddMediatR(configurations =>
 {
     configurations.RegisterServicesFromAssembly(infrastructureAssembly);
 });
 
-builder.Services.AddScoped<IFoodRepository, FoodSqlRepository>();
+builder.Services.AddSingleton<IFoodRepository>(provider =>
+{
+    if (string.IsNullOrWhiteSpace(connectionString) || string.IsNullOrWhiteSpace(database) || string.IsNullOrWhiteSpace(collection))
+    {
+        throw new Exception($"Not Found");
+    }
+
+    return new FoodMongoRepository(connectionString, database, collection);
+});
 
 builder.Services.AddAuthorization();
-
-var connectionString = builder.Configuration.GetConnectionString("FoodDb");
-
-builder.Services.AddDbContext<FoodDbContext>(dbContextOptionsBuilder =>
-{
-    dbContextOptionsBuilder.UseNpgsql(connectionString, o =>
-    {
-        o.MigrationsAssembly(Assembly.GetExecutingAssembly().FullName);
-    });
-});
 
 builder.Services.AddControllers();
 
@@ -58,10 +61,12 @@ builder.Services.AddAuthentication();
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddCors(options => {
-    options.AddPolicy("BlazorWasmPolicy", corsBuilder => {
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("BlazorWasmPolicy", corsBuilder =>
+    {
         corsBuilder
-            .WithOrigins("http://localhost:5160")
+            .AllowAnyOrigin()
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -69,12 +74,19 @@ builder.Services.AddCors(options => {
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+using (var scope = app.Services.CreateScope())
 {
-    app.UseSwagger();
+    var client = new MongoClient(connectionString);
 
-    app.UseSwaggerUI();
+    var foodDb = client.GetDatabase(database);
+
+    var foodCollection = foodDb.GetCollection<Food>(collection);
 }
+
+
+app.UseSwagger();
+
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
