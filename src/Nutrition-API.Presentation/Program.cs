@@ -8,9 +8,10 @@ using Nutrition_API.Core.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetSection("FoodDb").Value;
-var database = builder.Configuration.GetSection("Database").Value;
-var collection = builder.Configuration.GetSection("Collection").Value;
 
+var database = builder.Configuration.GetSection("Database").Value;
+
+var collection = builder.Configuration.GetSection("Collection").Value;
 
 var blobImageOptionsSection = builder.Configuration.GetSection("BlobImageOptions");
 
@@ -86,7 +87,6 @@ using (var scope = app.Services.CreateScope())
 app.UseSwagger();
 
 app.UseSwaggerUI();
-
 
 app.UseHttpsRedirection();
 
