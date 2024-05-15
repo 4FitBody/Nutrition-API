@@ -5,7 +5,7 @@ services:
     image: nutritionapi
     container_name: nutritionapiapp
     depends_on:
-      - mongodb
+      - nutritionmongodb
     build:
       context: .
       dockerfile: Dockerfile
@@ -17,9 +17,9 @@ services:
       - nutritionbridgenetwork
     restart: always
 
-  mongodb:
+  nutritionmongodb:
     image: mongo
-    container_name: mongodb
+    container_name: nutritionmongodb
     expose:
       - 27017
     ports:
