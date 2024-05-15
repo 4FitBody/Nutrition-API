@@ -1,13 +1,16 @@
+using MongoDB.Driver;
 using Microsoft.OpenApi.Models;
 using Nutrition_API.Infrastructure.Repositories;
 using Nutrition_API.Core.Repositories;
 using Nutrition_API.Presentation.Options;
-using MongoDB.Driver;
 using Nutrition_API.Core.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("FoodDb");
+var connectionString = builder.Configuration.GetSection("FoodDb").Value;
+var database = builder.Configuration.GetSection("Database").Value;
+var collection = builder.Configuration.GetSection("Collection").Value;
+
 
 var blobImageOptionsSection = builder.Configuration.GetSection("BlobImageOptions");
 
@@ -30,12 +33,12 @@ builder.Services.AddMediatR(configurations =>
 
 builder.Services.AddSingleton<IFoodRepository>(provider =>
 {
-    if (string.IsNullOrWhiteSpace(connectionString))
+    if (string.IsNullOrWhiteSpace(connectionString) || string.IsNullOrWhiteSpace(database) || string.IsNullOrWhiteSpace(collection))
     {
-        throw new Exception($"{connectionString} not found");
+        throw new Exception($"Not Found");
     }
 
-    return new FoodMongoRepository(connectionString);
+    return new FoodMongoRepository(connectionString, database, collection);
 });
 
 builder.Services.AddAuthorization();
@@ -74,9 +77,9 @@ using (var scope = app.Services.CreateScope())
 {
     var client = new MongoClient(connectionString);
 
-    var booksDb = client.GetDatabase("FoodDb");
+    var foodDb = client.GetDatabase(database);
 
-    var booksCollection = booksDb.GetCollection<Food>("Food");
+    var foodCollection = foodDb.GetCollection<Food>(collection);
 }
 
 

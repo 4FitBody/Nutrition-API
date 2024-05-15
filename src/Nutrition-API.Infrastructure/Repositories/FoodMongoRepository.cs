@@ -9,13 +9,13 @@ public class FoodMongoRepository : IFoodRepository
     private readonly IMongoDatabase foodDb;
     private readonly IMongoCollection<Food> collection;
 
-    public FoodMongoRepository(string connectionString)
+    public FoodMongoRepository(string connectionString, string db, string collection)
     {
         var client = new MongoClient(connectionString);
 
-        this.foodDb = client.GetDatabase("FoodDb");
+        this.foodDb = client.GetDatabase(db);
 
-        this.collection = this.foodDb.GetCollection<Food>("Food");
+        this.collection = this.foodDb.GetCollection<Food>(collection);
     }
 
     public async Task ApproveAsync(int id)
