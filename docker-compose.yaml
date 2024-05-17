@@ -17,19 +17,6 @@ services:
       - nutritionbridgenetwork
     restart: always
 
-  nutritionmongodb:
-    image: mongo
-    container_name: nutritionmongodb
-    expose:
-      - 27017
-    ports:
-      - 27017:27017
-    networks:
-      - nutritionbridgenetwork
-    volumes:
-      - mymongovolume:/data/db
-      - mymongovolume:/data/configdb
-    restart: always
 
   
 
