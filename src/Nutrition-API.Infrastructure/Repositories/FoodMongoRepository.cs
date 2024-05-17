@@ -29,6 +29,10 @@ public class FoodMongoRepository : IFoodRepository
 
     public async Task CreateAsync(Food food)
     {
+        var lastIndex = this.collection.Find(e => e.Id >= 0).ToList().Last().Id;
+
+        food.Id = lastIndex + 1;
+
         await this.collection.InsertOneAsync(food);
     }
 
@@ -57,6 +61,14 @@ public class FoodMongoRepository : IFoodRepository
 
     public async Task UpdateAsync(int id, Food food)
     {
+        food.Id = id;
+        
+        var oldFood = await this.GetByIdAsync(id);
+
+        food.ImageUrl = oldFood.ImageUrl;
+
+        food.VideoUrl = oldFood.VideoUrl;
+
         await this.collection.ReplaceOneAsync<Food>(filter: f => f.Id == id, replacement: food);
     }
 }
