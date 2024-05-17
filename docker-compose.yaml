@@ -35,7 +35,8 @@ services:
 
 networks:
   nutritionbridgenetwork:
-    driver: bridge
+    name: exercises-api_mongobridgenetwork 
+    external: true
 
 volumes:
   mymongovolume:
