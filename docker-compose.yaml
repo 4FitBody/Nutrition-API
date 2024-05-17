@@ -4,8 +4,6 @@ services:
   nutritionapiapp:
     image: nutritionapi
     container_name: nutritionapiapp
-    depends_on:
-      - nutritionmongodb
     build:
       context: .
       dockerfile: Dockerfile
