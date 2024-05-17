@@ -82,8 +82,8 @@ public class FoodController : ControllerBase
             Description = foodContent.Food.Description,
             Diet = foodContent.Food.Diet,
             IsApproved = false,
-            ImageUrl = "https://4fitbodystorage.blob.core.windows.net/images/" + imagePath,
-            VideoUrl = "https://4fitbodystorage.blob.core.windows.net/videos/" + videoPath
+            ImageUrl = "https://4fitbodystorage.blob.core.windows.net/food-images/" + imagePath,
+            VideoUrl = "https://4fitbodystorage.blob.core.windows.net/food-videos/" + videoPath
         };
 
         await this.blobContainerService.UploadAsync(new MemoryStream(imageFileData!), imageRawPath);
